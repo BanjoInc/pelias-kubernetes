@@ -3,13 +3,12 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ .Values.pip.pvc.name }}
-  namespace: {{ .Values.pip.pvc.namespace }}
   annotations:
     {{- range $key, $value := .Values.pip.pvc.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
-  storageClassName: {{ .Values.pip.pvc.storageclass.name }}
+  storageClassName: {{ .Values.pip.pvc.storageclassname }}
   accessModes:
     - {{ .Values.pip.pvc.accessModes }}
   resources:
