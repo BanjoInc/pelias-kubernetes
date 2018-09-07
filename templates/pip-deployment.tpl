@@ -14,6 +14,7 @@ spec:
       labels:
         app: pelias-pip
     spec:
+      {{- if .Values.pip.init_containers.enabled }}
       initContainers:
         - name: wof-download
           image: pelias/pip-service:{{ .Values.pipDockerTag | default "latest" }}
@@ -23,6 +24,8 @@ spec:
               mountPath: /etc/config
             - name: data-volume
               mountPath: /data
+          securityContext:
+            privileged: {{ .Values.pip.security_context.privileged }}
           env:
             - name: PELIAS_CONFIG
               value: "/etc/config/pelias.json"
@@ -33,6 +36,7 @@ spec:
             requests:
               memory: 1Gi
               cpu: 0.1
+        {{- end }}
       containers:
         - name: pelias-pip
           image: pelias/pip-service:{{ .Values.pipDockerTag | default "latest" }}
@@ -41,6 +45,8 @@ spec:
               mountPath: /etc/config
             - name: data-volume
               mountPath: /data
+          securityContext:
+            privileged: {{ .Values.pip.security_context.privileged }}
           env:
             - name: PELIAS_CONFIG
               value: "/etc/config/pelias.json"
@@ -63,5 +69,11 @@ spec:
             items:
               - key: pelias.json
                 path: pelias.json
+      {{- if .Values.pip.pvc.enabled }}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.pip.pvc.name }}
+      {{- else }}
         - name: data-volume
           emptyDir: {}
+      {{- end }}

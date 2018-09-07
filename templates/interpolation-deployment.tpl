@@ -9,6 +9,7 @@ spec:
       labels:
         app: pelias-interpolation
     spec:
+      {{- if .Values.interpolation.init_containers.enabled }}
       initContainers:
         - name: interpolation-download
           image: busybox
@@ -19,6 +20,8 @@ spec:
           volumeMounts:
             - name: data-volume
               mountPath: /data
+          securityContext:
+            privileged: {{ .Values.interpolation.security_context.privileged }}
           resources:
             limits:
               memory: 3Gi
@@ -26,12 +29,15 @@ spec:
             requests:
               memory: 512Mi
               cpu: 0.1
+      {{- end }}
       containers:
         - name: pelias-interpolation
           image: pelias/interpolation:{{ .Values.interpolationDockerTag | default "latest" }}
           volumeMounts:
             - name: data-volume
               mountPath: /data
+          securityContext:
+            privileged: {{ .Values.interpolation.security_context.privileged }}
           resources:
             limits:
               memory: 3Gi
@@ -40,5 +46,11 @@ spec:
               memory: 2Gi
               cpu: 0.1
       volumes:
+      {{- if .Values.interpolation.pvc.enabled }}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.interpolation.pvc.name }}
+      {{- else }}
         - name: data-volume
           emptyDir: {}
+      {{- end }}

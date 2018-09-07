@@ -25,3 +25,21 @@ pipEnabled: true
 interpolationEnabled: false
 
 placeholderStoreURL: "https://s3.amazonaws.com/pelias-data.nextzen.org/placeholder/store.sqlite3.gz"
+
+interpolation:
+  init_containers:
+    enabled: true
+  pvc:
+    create: false
+    enabled: false
+  security_context:
+    privileged: false
+
+pip:
+  init_containers:
+    enabled: true
+  pvc:
+    create: false
+    enabled: false
+  security_context:
+    privileged: false
